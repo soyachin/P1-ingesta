@@ -12,7 +12,7 @@ with open('ingesta_pacientes.json', 'w') as outfile:
     json.dump(datos, outfile)
 
 s3_client = boto3.client('s3')
-bucket_name = 'P1ingesta'
+bucket_name = os.getenv('S3_BUCKET')
 
 s3_file_name = 'ingesta_pacientes.json'
 
