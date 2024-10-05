@@ -14,7 +14,7 @@ with open('ingesta_pacientes.json', 'w') as outfile:
 s3_client = boto3.client('s3')
 bucket_name = os.getenv('S3_BUCKET')
 
-s3_file_name = 'ingesta_pacientes.json'
+s3_file_name = 'pacientes.json'
 
 s3_client.upload_file('ingesta_pacientes.json', bucket_name, s3_file_name)
 
