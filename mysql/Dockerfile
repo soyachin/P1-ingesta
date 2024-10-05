@@ -4,6 +4,6 @@ WORKDIR /ingesta
 
 RUN pip3 install boto3 mysql-connector pandas
 
-COPY .. .
+COPY . .
 
-CMD ["python3", "mysql/myseq.py"]
+CMD ["python3", "myseq.py"]

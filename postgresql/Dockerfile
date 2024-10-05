@@ -4,6 +4,6 @@ WORKDIR /ingesta
 
 RUN pip3 install boto3 psycopg2 pandas
 
-COPY .. .
+COPY . .
 
-CMD ["python3", "postgresql/postgres.py"]
+CMD ["python3", "postgres.py"]

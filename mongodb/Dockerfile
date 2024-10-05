@@ -4,6 +4,6 @@ WORKDIR /ingesta
 
 RUN pip3 install boto3 pymongo
 
-COPY .. .
+COPY . .
 
-CMD ["python3", "mongodb/mongo.py"]
+CMD ["python3", "mongo.py "]

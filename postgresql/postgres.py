@@ -16,7 +16,7 @@ query = 'SELECT * FROM ' + table_name
 
 df = pd.read_sql_query(query, connection)
 
-file = "dump_posgresql.csv"
+file = "dump_postgresql.csv"
 
 df.to_csv(file, index=False)
 print(f"Exportado a '{file}' !")
