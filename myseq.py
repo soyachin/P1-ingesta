@@ -1,11 +1,13 @@
+import os
+
 import mysql.connector
 import pandas as pd
 
 mydb = mysql.connector.connect(
-    host = 'HOST',
-    user = "MYSQL_USER",
-    password = "MYSQL_PASSWORD",
-    database = 'MYSQL_DB'
+    host = os.getenv('MYSQL_HOST'),
+    user = os.getenv('MYSQL_USER'),
+    password = os.getenv('MYSQL_PASSWORD'),
+    database = os.getenv('MYSQL_DATABASE')
 )
 
 table_name = 'MYSQL_TABLE'
