@@ -5,7 +5,7 @@ from mysql.connector import Error
 import pandas as pd
 import boto3
 
-required_env_vars = ['MYSQL_HOST', 'MYSQL_USER', 'MYSQL_PASSWORD', 'MYSQL_DATABASE', 'MYSQL_PORT', 'MYSQL_TABLE', 'S3_BUCKET']
+required_env_vars = ['MYSQL_HOST', 'MYSQL_USER', 'MYSQL_PASSWORD', 'MYSQL_DATABASE', 'MYSQL_PORT', 'S3_BUCKET']
 for var in required_env_vars:
     if not os.getenv(var):
         raise EnvironmentError(f"Required environment variable {var} is not set")
@@ -21,19 +21,20 @@ try:
     )
 
     if mydb.is_connected():
-        table_name = os.getenv('MYSQL_TABLE')
-        query = 'SELECT * FROM ' + table_name
-
-        df = pd.read_sql(query, con=mydb)
-
-        file = 'dump_mysql.csv'
-        df.to_csv(file, index=False)
+        table_name = os.getenv('MYSQL_TABLES').split(",")
+        dataframes = []
 
         s3_client = boto3.client('s3')
         bucket_name = os.getenv('S3_BUCKET')
 
-        s3_file_name = 'historia_medica.csv'
-        s3_client.upload_file('dump_mysql.csv', bucket_name, s3_file_name)
+        for table in table_name:
+            query = 'SELECT * FROM ' + table
+            df = pd.read_sql(query, con=mydb)
+            file_name = table + '_dump.csv'
+            df.to_csv(file_name, index=False)
+            s3_file_name = "ing_historias/" + table + '.csv'
+            s3_client.upload_file(file_name, bucket_name, s3_file_name)
+            print(f"Exported and '{file_name}' to '{bucket_name}'")
 
 except Error as e:
     print(f"Error connecting to MySQL: {e}")

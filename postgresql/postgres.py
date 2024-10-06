@@ -22,20 +22,19 @@ except psycopg2.Error as e:
 
 if connection:
     try:
-        table_name = os.getenv('PG_TABLE')
-        query = 'SELECT * FROM ' + table_name
-
-        df = pd.read_sql_query(query, connection)
-
-        file = "dump_postgresql.csv"
-        df.to_csv(file, index=False)
-        print(f"Exported to '{file}'!")
-
+        table_name = os.getenv('PG_TABLES').split(",")
         s3_client = boto3.client('s3')
         bucket_name = os.getenv('S3_BUCKET')
 
-        s3_file_name = 'doctores.csv'
-        s3_client.upload_file('dump_postgresql.csv', bucket_name, s3_file_name)
+        for table in table_name:
+            query = 'SELECT * FROM ' + table
+            df = pd.read_sql(query, con=connection)
+            file_name = table + '_dump.csv'
+            df.to_csv(file_name, index=False)
+            s3_file_name = "ing_doctores/" + table + '.csv'
+            s3_client.upload_file(file_name, bucket_name, s3_file_name)
+            print(f"Exported and '{file_name}' to '{bucket_name}'")
+
     except Exception as e:
         print(f"An error occurred: {e}")
     finally:

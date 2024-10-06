@@ -25,7 +25,7 @@ if mongo_client:
     s3_client = boto3.client('s3')
     bucket_name = os.getenv('S3_BUCKET')
 
-    s3_file_name = 'pacientes.json'
+    s3_file_name = 'ing_pacientes/pacientes.json'
 
     s3_client.upload_file('ingesta_pacientes.json', bucket_name, s3_file_name)
     print(f"Exported to '{s3_file_name}'!")
