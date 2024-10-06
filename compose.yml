@@ -6,7 +6,7 @@ services:
       - S3_BUCKET=${S3_BUCKET}
     volumes:
       - ./mongodb:/ingesta
-      - home/ubuntu/.aws/credentials:/root/.aws/credentials
+      - /home/ubuntu/.aws/credentials:/root/.aws/credentials
 
 
   ingesta-mysql:
