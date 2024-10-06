@@ -16,7 +16,6 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_TABLE=${MYSQL_TABLE}
       - S3_BUCKET=${S3_BUCKET}
     volumes:
       - ./mysql:/ingesta
@@ -29,7 +28,6 @@ services:
       - PG_PASSWORD=${PG_PASSWORD}
       - PG_HOST=${PG_HOST}
       - PG_PORT=${PG_PORT}
-      - PG_TABLE=${PG_TABLE}
       - S3_BUCKET=${S3_BUCKET}
     volumes:
       - ./postgresql:/ingesta
