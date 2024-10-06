@@ -1,28 +1,32 @@
+import json, boto3
+from pymongo import MongoClient
 import os
 
-import mysql.connector
-import pandas as pd
-import boto3
+# Verify environment variables
+required_env_vars = ['MONGO_CLIENT', 'S3_BUCKET']
+for var in required_env_vars:
+    if not os.getenv(var):
+        raise EnvironmentError(f"Required environment variable {var} is not set")
 
-mydb = mysql.connector.connect(
-    host = os.getenv('MYSQL_HOST'),
-    user = os.getenv('MYSQL_USER'),
-    password = os.getenv('MYSQL_PASSWORD'),
-    database = os.getenv('MYSQL_DATABASE')
-)
+try:
+    mongo_client = MongoClient(os.getenv('MONGO_CLIENT'))
+    db = mongo_client['P1pacientes_test']
+    collection = db['Pacientes']
+    print("Connection to MongoDB successful")
+except Exception as e:
+    print(f"Error connecting to MongoDB: {e}")
+    mongo_client = None
 
-table_name = os.getenv('MYSQL_TABLE')
+if mongo_client:
+    datos = list(collection.find())
 
-query = 'SELECT * FROM ' + table_name
+    with open('ingesta_pacientes.json', 'w') as outfile:
+        json.dump(datos, outfile)
 
-df = pd.read_sql(query, con=mydb)
+    s3_client = boto3.client('s3')
+    bucket_name = os.getenv('S3_BUCKET')
 
-file = 'dump_mysql.csv'
-df.to_csv(file, index=False)
+    s3_file_name = 'pacientes.json'
 
-s3_client = boto3.client('s3')
-bucket_name = os.getenv('S3_BUCKET')
-
-s3_file_name = 'historia_medica.csv'
-
-s3_client.upload_file('dump_mysql.csv', bucket_name, s3_file_name)
+    s3_client.upload_file('ingesta_pacientes.json', bucket_name, s3_file_name)
+    print(f"Exported to '{s3_file_name}'!")
