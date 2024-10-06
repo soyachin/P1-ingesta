@@ -18,7 +18,7 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - S3_BUCKET=${S3_BUCKET}
-      - MYSQL_TABLES=${MYSQL_TABLE}
+      - MYSQL_TABLES=${MYSQL_TABLES}
     volumes:
       - ./mysql:/ingesta
       - /home/ubuntu/.aws/credentials:/root/.aws/credentials
