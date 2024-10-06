@@ -5,7 +5,7 @@ from mysql.connector import Error
 import pandas as pd
 import boto3
 
-required_env_vars = ['MYSQL_HOST', 'MYSQL_USER', 'MYSQL_PASSWORD', 'MYSQL_DATABASE', 'MYSQL_PORT', 'S3_BUCKET']
+required_env_vars = ['MYSQL_HOST', 'MYSQL_USER', 'MYSQL_PASSWORD', 'MYSQL_DATABASE', 'MYSQL_PORT', 'S3_BUCKET', 'MYSQL_TABLES']
 for var in required_env_vars:
     if not os.getenv(var):
         raise EnvironmentError(f"Required environment variable {var} is not set")
