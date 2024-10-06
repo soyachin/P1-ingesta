@@ -6,4 +6,4 @@ RUN pip3 install boto3 pymongo
 
 COPY . .
 
-CMD ["python3", "mongo.py "]
+CMD ["python3", "mongo.py"]
