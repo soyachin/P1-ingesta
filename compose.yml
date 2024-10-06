@@ -18,7 +18,7 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - S3_BUCKET=${S3_BUCKET}
-    command: --default-authentication-plugin=mysql_native_password
+    command: mysqld--default-authentication-plugin=mysql_native_password
     volumes:
       - ./mysql:/ingesta
       - /home/ubuntu/.aws/credentials:/root/.aws/credentials
