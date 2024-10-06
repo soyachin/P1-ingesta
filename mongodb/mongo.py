@@ -1,6 +1,12 @@
 import json, boto3
 from pymongo import MongoClient
 import os
+from datetime import datetime
+
+def convert_datetime(o):
+    if isinstance(o, datetime):
+        return o.isoformat()
+    raise TypeError(f'Object of type {o.__class__.__name__} is not JSON serializable')
 
 required_env_vars = ['MONGO_CLIENT', 'S3_BUCKET']
 for var in required_env_vars:
@@ -20,7 +26,7 @@ if mongo_client:
     datos = list(collection.find())
 
     with open('ingesta_pacientes.json', 'w') as outfile:
-        json.dump(datos, outfile)
+        json.dump(datos, outfile, default=convert_datetime, indent=4)
 
     s3_client = boto3.client('s3')
     bucket_name = os.getenv('S3_BUCKET')
