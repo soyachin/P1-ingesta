@@ -1,32 +1,47 @@
-import json, boto3
-from pymongo import MongoClient
 import os
 
-# Verify environment variables
-required_env_vars = ['MONGO_CLIENT', 'S3_BUCKET']
+import mysql.connector
+from mysql.connector import Error
+import pandas as pd
+import boto3
+
+required_env_vars = ['MYSQL_HOST', 'MYSQL_USER', 'MYSQL_PASSWORD', 'MYSQL_DATABASE', 'MYSQL_PORT', 'MYSQL_TABLE', 'S3_BUCKET']
 for var in required_env_vars:
     if not os.getenv(var):
         raise EnvironmentError(f"Required environment variable {var} is not set")
 
+
 try:
-    mongo_client = MongoClient(os.getenv('MONGO_CLIENT'))
-    db = mongo_client['P1pacientes_test']
-    collection = db['Pacientes']
-    print("Connection to MongoDB successful")
+    mydb = mysql.connector.connect(
+        host=os.getenv('MYSQL_HOST'),
+        user=os.getenv('MYSQL_USER'),
+        password=os.getenv('MYSQL_PASSWORD'),
+        database=os.getenv('MYSQL_DATABASE'),
+        port=os.getenv('MYSQL_PORT')
+    )
+
+    if mydb.is_connected():
+        table_name = os.getenv('MYSQL_TABLE')
+        query = 'SELECT * FROM ' + table_name
+
+        df = pd.read_sql(query, con=mydb)
+
+        file = 'dump_mysql.csv'
+        df.to_csv(file, index=False)
+
+        s3_client = boto3.client('s3')
+        bucket_name = os.getenv('S3_BUCKET')
+
+        s3_file_name = 'historia_medica.csv'
+        s3_client.upload_file('dump_mysql.csv', bucket_name, s3_file_name)
+
+except Error as e:
+    print(f"Error connecting to MySQL: {e}")
+
 except Exception as e:
-    print(f"Error connecting to MongoDB: {e}")
-    mongo_client = None
+    print(f"An error occurred: {e}")
 
-if mongo_client:
-    datos = list(collection.find())
-
-    with open('ingesta_pacientes.json', 'w') as outfile:
-        json.dump(datos, outfile)
-
-    s3_client = boto3.client('s3')
-    bucket_name = os.getenv('S3_BUCKET')
-
-    s3_file_name = 'pacientes.json'
-
-    s3_client.upload_file('ingesta_pacientes.json', bucket_name, s3_file_name)
-    print(f"Exported to '{s3_file_name}'!")
+finally:
+    if 'mydb' in locals() and mydb.is_connected():
+        mydb.close()
+        print("MySQL connection is closed")

@@ -21,17 +21,23 @@ except psycopg2.Error as e:
     connection = None
 
 if connection:
-    table_name = os.getenv('PG_TABLE')
-    query = 'SELECT * FROM ' + table_name
+    try:
+        table_name = os.getenv('PG_TABLE')
+        query = 'SELECT * FROM ' + table_name
 
-    df = pd.read_sql_query(query, connection)
+        df = pd.read_sql_query(query, connection)
 
-    file = "dump_postgresql.csv"
-    df.to_csv(file, index=False)
-    print(f"Exported to '{file}'!")
+        file = "dump_postgresql.csv"
+        df.to_csv(file, index=False)
+        print(f"Exported to '{file}'!")
 
-    s3_client = boto3.client('s3')
-    bucket_name = os.getenv('S3_BUCKET')
+        s3_client = boto3.client('s3')
+        bucket_name = os.getenv('S3_BUCKET')
 
-    s3_file_name = 'doctores.csv'
-    s3_client.upload_file('dump_postgresql.csv', bucket_name, s3_file_name)
+        s3_file_name = 'doctores.csv'
+        s3_client.upload_file('dump_postgresql.csv', bucket_name, s3_file_name)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    finally:
+        connection.close()
+        print("PostgreSQL connection is closed")
