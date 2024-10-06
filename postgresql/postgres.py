@@ -2,7 +2,7 @@ import os, psycopg2, boto3
 
 import pandas as pd
 
-required_env_vars = ['PG_DB', 'PG_USER', 'PG_PASSWORD', 'PG_HOST', 'PG_PORT', 'PG_TABLE', 'S3_BUCKET']
+required_env_vars = ['PG_DB', 'PG_USER', 'PG_PASSWORD', 'PG_HOST', 'PG_PORT', 'S3_BUCKET']
 for var in required_env_vars:
     if not os.getenv(var):
         raise EnvironmentError(f"Required environment variable {var} is not set")
