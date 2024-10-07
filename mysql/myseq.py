@@ -32,7 +32,7 @@ try:
             query = 'SELECT * FROM ' + table
             df = pd.read_sql(query, con=mydb)
             file_name = table + '_dump.csv'
-            df.to_csv(file_name, index=False)
+            df.to_csv(file_name, index=False, header=False)
             s3_file_name = "ing_historias/" + table + '.csv'
             s3_client.upload_file(file_name, bucket_name, s3_file_name)
             print(f"Exported and '{file_name}' to '{bucket_name}'")
