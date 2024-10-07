@@ -23,10 +23,13 @@ except Exception as e:
     mongo_client = None
 
 if mongo_client:
-    datos = list(collection.find())
-
     with open('ingesta_pacientes.json', 'w') as outfile:
-        json.dump(datos, outfile, default=convert_datetime, indent=4)
+        for document in collection.find():
+            # Convert datetime objects in the document
+            document = json.loads(json.dumps(document, default=convert_datetime))
+            # Write the document as a JSON string on a new line
+            json_line = json.dumps(document)
+            outfile.write(json_line + "\n")
 
     s3_client = boto3.client('s3')
     bucket_name = os.getenv('S3_BUCKET')
